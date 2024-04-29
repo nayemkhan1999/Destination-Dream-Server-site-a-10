@@ -30,6 +30,13 @@ async function run() {
       .db("destinationDB")
       .collection("destination");
 
+    // email
+    app.get("/destination_email/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await destinationCollection.find(query).toArray();
+      res.send(result);
+    });
     // Data get
     app.get("/destination", async (req, res) => {
       const cursor = destinationCollection.find();
@@ -44,11 +51,48 @@ async function run() {
       res.send(result);
     });
 
+    //  data Updated
+    app.put("/destination/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDestination = req.body;
+      const destination = {
+        $set: {
+          name: updatedDestination.name,
+          Country: updatedDestination.Country,
+          spotLocation: updatedDestination.spotLocation,
+          averageCost: updatedDestination.averageCost,
+          seasonality: updatedDestination.seasonality,
+          tavelTime: updatedDestination.tavelTime,
+          photo: updatedDestination.photo,
+          totalVisitors: updatedDestination.totalVisitors,
+          email: updatedDestination.email,
+          displayName: updatedDestination.displayName,
+          description: updatedDestination.description,
+        },
+      };
+      const result = await destinationCollection.updateOne(
+        filter,
+        destination,
+        options
+      );
+      res.send(result);
+    });
+
     // App get
     app.get("/destination/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await destinationCollection.findOne(query);
+      res.send(result);
+    });
+
+    //Delete operation
+    app.delete("/destination/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await destinationCollection.deleteOne(query);
       res.send(result);
     });
 
