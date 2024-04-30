@@ -30,6 +30,11 @@ async function run() {
       .db("destinationDB")
       .collection("destination");
 
+    // category collection
+    const categoryCollection = client
+      .db("destinationDB")
+      .collection("destination_category");
+
     // email
     app.get("/destination_email/:email", async (req, res) => {
       const email = req.params.email;
@@ -50,7 +55,20 @@ async function run() {
       const result = await destinationCollection.insertOne(newDestination);
       res.send(result);
     });
-
+    // category collection
+    app.get("/destination_category", async (req, res) => {
+      const getDestinations = categoryCollection.find();
+      const result = await getDestinations.toArray();
+      res.send(result);
+    });
+    // sub category
+    app.get("/categoryCollection/:Country", async (req, res) => {
+      const category = req.params.Country;
+      const query = { Country: category };
+      const result = await destinationCollection.find(query).toArray();
+      console.log(result, "server site");
+      res.send(result);
+    });
     //  Data Updated
     app.put("/destination/:id", async (req, res) => {
       const id = req.params.id;
